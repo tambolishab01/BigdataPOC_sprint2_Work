@@ -1,0 +1,241 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory Name",
+            "defaultValue": "shabadf"
+        },
+        "dataFactoryLocation": {
+            "type": "string",
+            "defaultValue": "East US 2",
+			"allowedValues": [
+				"East US",
+				"East US 2",
+				"West Europe",
+				"Southeast Asia"
+			],
+			"metadata": {
+				"description": "Location of the data factory."
+			}
+		},
+        "inputlinkeservice_servicePrincipalKey": {
+            "type": "secureString",
+            "defaultValue": "J76B/wvOWWMnLGniHCfAh4AttMVmur8x5J0RRY678SA=",
+            "metadata": "Secure string for 'servicePrincipalKey' of 'inputlinkeservice' key for datalakestorage"
+        },
+        "AzureDataLakeAnalyticslinkservice_servicePrincipalKey": {
+            "type": "secureString",
+            "defaultValue": "J76B/wvOWWMnLGniHCfAh4AttMVmur8x5J0RRY678SA=",
+            "metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeAnalyticslinkservice' key for datalake anylytics"
+        },
+        "inputlinkeservice_properties_typeProperties_dataLakeStoreUri": {
+            "type": "string",
+            "defaultValue": "https://shabadlsacnt.azuredatalakestore.net/webhdfs/v1"
+        },
+        "inputlinkeservice_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "3ab325b4-fd99-4a72-b770-12c8c766d4a4"
+        },
+        "inputlinkeservice_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "c160a942-c869-429f-8a96-f8c8296d57db"
+        },
+        "inputlinkeservice_properties_typeProperties_subscriptionId": {
+            "type": "string",
+            "defaultValue": "07494aa9-3134-4cdd-9e14-e0d21257696c"
+        },
+        "inputlinkeservice_properties_typeProperties_resourceGroupName": {
+            "type": "string",
+            "defaultValue": "newrg"
+        },
+        "AzureDataLakeAnalyticslinkservice_properties_typeProperties_accountName": {
+            "type": "string",
+            "defaultValue": "shabadlsa"
+        },
+        "AzureDataLakeAnalyticslinkservice_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "3ab325b4-fd99-4a72-b770-12c8c766d4a4"
+        },
+        "AzureDataLakeAnalyticslinkservice_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "c160a942-c869-429f-8a96-f8c8296d57db"
+        },
+        "AzureDataLakeAnalyticslinkservice_properties_typeProperties_subscriptionId": {
+            "type": "string",
+            "defaultValue": "07494aa9-3134-4cdd-9e14-e0d21257696c"
+        },
+        "AzureDataLakeAnalyticslinkservice_properties_typeProperties_resourceGroupName": {
+            "type": "string",
+            "defaultValue": "newrg"
+        }
+       
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('factoryName')]",
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.DataFactory/factories",
+            "location":"[parameters('dataFactoryLocation')]",
+            "properties":{},
+            "resources": [
+                {
+                    "name": "[concat(parameters('factoryName'), '/inputlinkeservice')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureDataLakeStore",
+                        "typeProperties": {
+                            "dataLakeStoreUri": "[parameters('inputlinkeservice_properties_typeProperties_dataLakeStoreUri')]",
+                            "servicePrincipalId": "[parameters('inputlinkeservice_properties_typeProperties_servicePrincipalId')]",
+                            "servicePrincipalKey": {
+                                "type": "SecureString",
+                                "value": "[parameters('inputlinkeservice_servicePrincipalKey')]"
+                            },
+                            "tenant": "[parameters('inputlinkeservice_properties_typeProperties_tenant')]",
+                            "subscriptionId": "[parameters('inputlinkeservice_properties_typeProperties_subscriptionId')]",
+                            "resourceGroupName": "[parameters('inputlinkeservice_properties_typeProperties_resourceGroupName')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/AzureDataLakeAnalyticslinkservice')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureDataLakeAnalytics",
+                        "typeProperties": {
+                            "accountName": "[parameters('AzureDataLakeAnalyticslinkservice_properties_typeProperties_accountName')]",
+                            "servicePrincipalId": "[parameters('AzureDataLakeAnalyticslinkservice_properties_typeProperties_servicePrincipalId')]",
+                            "servicePrincipalKey": {
+                                "type": "SecureString",
+                                "value": "[parameters('AzureDataLakeAnalyticslinkservice_servicePrincipalKey')]"
+                            },
+                            "tenant": "[parameters('AzureDataLakeAnalyticslinkservice_properties_typeProperties_tenant')]",
+                            "subscriptionId": "[parameters('AzureDataLakeAnalyticslinkservice_properties_typeProperties_subscriptionId')]",
+                            "resourceGroupName": "[parameters('AzureDataLakeAnalyticslinkservice_properties_typeProperties_resourceGroupName')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/inputdataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "inputlinkeservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureDataLakeStoreLocation",
+                                "fileName": "SummarizeLogs.usql",
+                                "folderPath": "input"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Prop_0",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/linkedServices/inputlinkeservice')]",
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/outputdataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "inputlinkeservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureDataLakeStoreLocation",
+                                "folderPath": "output"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/linkedServices/inputlinkeservice')]",
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/pipeline1')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "U-SQL1",
+                                "type": "DataLakeAnalyticsU-SQL",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "scriptPath": "script/SummarizeLogs.usql",
+                                    "scriptLinkedService": {
+                                        "referenceName": "inputlinkeservice",
+                                        "type": "LinkedServiceReference"
+                                    },
+                                    "parameters": {
+                                        "log_file": "adl://shabadlsacnt.azuredatalakestore.net/input/log.txt",
+                                        "summary_file": "adl://shabadlsacnt.azuredatalakestore.net/output/shab.csv"
+                                    }
+                                },
+                                "linkedServiceName": {
+                                    "referenceName": "AzureDataLakeAnalyticslinkservice",
+                                    "type": "LinkedServiceReference"
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeAnalyticslinkservice')]",
+                        "[concat(variables('factoryId'), '/linkedServices/inputlinkeservice')]",
+                        "[parameters('factoryName')]"
+                    ]
+                }
+
+            ]
+
+    }
+        
+    ]
+}
